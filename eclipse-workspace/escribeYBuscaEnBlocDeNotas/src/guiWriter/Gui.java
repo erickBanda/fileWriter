@@ -30,6 +30,7 @@ public class Gui extends JFrame {
 	private JTextField textTel;
 	private JTextField textCor;
 	private JButton btnBuscar;
+	Enlace enlace = new Enlace("");
 	DefaultListModel Modelo=new DefaultListModel();
 	/**
 	 * Launch the application.
@@ -92,17 +93,11 @@ public class Gui extends JFrame {
 		JButton btnAnadir = new JButton("Añadir");
 		btnAnadir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					BufferedWriter out = new BufferedWriter(new FileWriter("src/guiWriter/texto3/texto.txt", true));
-					String cadena =textNom.getText()+","+textTel.getText()+","+textCor.getText()+"\n";
-						out.write(cadena);						
-						out.close();
-						textNom.setText("");textTel.setText("");textCor.setText("");
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					System.out.println(e1.getMessage());
-					e1.printStackTrace();						
-				}
+				
+					enlace.anadir(textNom.getText(), textTel.getText(), textCor.getText());
+			textNom.setText("");
+			textTel.setText("");
+			textCor.setText("");
 				
 			}
 		});
@@ -116,23 +111,14 @@ public class Gui extends JFrame {
 		JButton btnMostrarTodo = new JButton("Mostrar todos los contactos");
 		btnMostrarTodo.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
-		        try {
-		            String renglon;
-		            BufferedReader in = new BufferedReader(new FileReader("src/guiWriter/texto3/texto.txt"));
-		            while ((renglon = in.readLine()) != null) {
-		                String[] datos = renglon.split(",");
-		                if (datos.length >= 3) {
-		                    // Concatenar los datos y agregarlos al modelo
-		                    String infoContacto = "Nombre: " + datos[0] + ", Teléfono: " + datos[1] + ", Correo: " + datos[2];
-		                    Modelo.addElement(infoContacto);
-		                }
-		            }
-		            in.close();
-		        } catch (IOException e1) {
-		            System.out.println(e1.getMessage());
+		        String resultados = enlace.MuestraTodo();
+		        String[] lineas = resultados.split("\n");
+		        for (String linea : lineas) {
+		            Modelo.addElement(linea);
 		        }
-		    }
+		    }  
 		});
+
 
 		btnMostrarTodo.setBounds(84, 413, 199, 34);
 		contentPane.add(btnMostrarTodo);
@@ -140,25 +126,11 @@ public class Gui extends JFrame {
 		btnBuscar = new JButton("Buscar");
 		btnBuscar.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
-		        String nombreBuscar = JOptionPane.showInputDialog("Ingrese el nombre para obtener los datos del usuario");
-		        try {
-		            String renglon;
-		            BufferedReader in = new BufferedReader(new FileReader("src/guiWriter/texto3/texto.txt"));
-		            while ((renglon = in.readLine()) != null) {
-		                String[] datos = renglon.split(",");
-		                if (datos.length >= 1 && datos[0].equals(nombreBuscar)) {
-		                    if (datos.length >= 3) {
-		                        textNom.setText(datos[0]);
-		                        textTel.setText(datos[1]);
-		                        textCor.setText(datos[2]);
-		                        break; 
-		                    }
-		                }
-		            }
-		            in.close();
-		        } catch (IOException e1) {
-		            System.out.println(e1.getMessage());
-		        }
+		        String nombre = JOptionPane.showInputDialog("Ingrese el nombre para obtener los datos del usuario");
+		        String[] resultados = enlace.buscar(nombre);
+		       textNom.setText(resultados[0]);
+		       textTel.setText(resultados[1]);
+		       textCor.setText(resultados[2]);
 		    }
 		});
 
